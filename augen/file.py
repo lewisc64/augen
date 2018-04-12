@@ -1,93 +1,95 @@
-from .functions import *
-from .notes import *
+from .instruments import *
 import re
 import functools
 
-class Instrument:
-    def __init__(self):
-        pass
+note_regex = re.compile("^(?:[A-G][b#]?[0-8]|X)$")
+time_regex = re.compile("^[0-9.]+\/?[0-9.]*$")
+instrument_regex = re.compile("^\[([a-z]+)\]$")
 
-    def use(self, note, duration, volume=1):
-        raise NotImplemented
-
-class SineWave(Instrument):
-    def use(self, note, duration, volume=1):
-        return Sine(get_frequency(note), volume, duration)
-
-class SawWave(Instrument):
-    def use(self, note, duration, volume=1):
-        return Saw(get_frequency(note), volume, duration)
-
-class Snare(Instrument):
-    def use(self, note, duration, volume=1):
-        noise1, noise2 = WhiteNoise(volume, 0.5).split(0.01)
-        noise1.fade_in()
-        noise2.fade_out()
-        return noise1 + noise2 + Silence(duration - 0.5)
-
-class Drum(Instrument):
-    def use(self, note, duration, volume=1):
-        noise1, noise2 = BrownianNoise(volume * 1.5, 0.5).split(0.01)
-        noise1.fade_in()
-        noise2.fade_out()
-        return noise1 + noise2 + Silence(duration - 0.5)
-        
-
-note_regex = re.compile("^[A-G][b#]?[0-8]$")
-time_regex = re.compile("^[0-9.]+$")
-instrument_regex = re.compile("\[([a-z]+)\]")
-
-instruments = {"sine":SineWave(), "saw":SawWave(), "snare":Snare(), "drum":Drum()}
+instruments = {"sine":SineWave(), "saw":SawWave(), "snare":Snare(), "drum":Drum(), "ping":Ping(), "piano":Piano()}
 
 def get_sections(data):
-
     bracket_level = 0
     sections = []
     record = ""
     i = 0
-    for section in data:
+    for letter in data:
         i += 1
-        record += section + " "
-        if "(" in section:
+        record += letter
+        if letter == "(":
             bracket_level += 1
-        elif ")" in section:
+        if letter == ")":
             if bracket_level == 1:
                 break
-            bracket_level += 1
-        elif "," in section and bracket_level == 1:
+            bracket_level -= 1
+        if letter == "," and bracket_level == 1:
             sections.append(record)
             record = ""
     sections.append(record)
     return [section.strip()[1 if section.startswith("(") else 0:-1] for section in sections], i
 
-def interpret(content, note_duration=None, instrument="sine"):
+def interpret(content, note_duration=0.25, instrument="sine"):
+    
+    print(content)
     
     out = Segment()
     
-    data = content.replace("\n", " ").split()
+    data = content.replace("\n", "").replace(" ", "")
+    print(data)
     
     cooldown = 0
     
-    for i, section in enumerate(data):
-        if cooldown > 0:
-            cooldown -= 1
-            continue
-            
-        if "(" in section:
-            subsections, cooldown = get_sections(data[i:])
-            cooldown -= 1
+    i1 = 0
+    i2 = 1
+    
+    expanding = False
+    valid = False
+    do = False
+    
+    while i2 <= len(data):
+        section = data[i1:i2]
+        print(section)
+        
+        if section == "(":
+            subsections, cooldown = get_sections(data[i1:])
+            i1 += cooldown
+            i2 = i1
             out += functools.reduce(Segment.__mul__, [interpret(s, note_duration, instrument) for s in subsections], Segment())
             
         elif time_regex.match(section):
-            note_duration = float(section)
+            expanding = True
+            valid = True
+            if do:
+                if "/" in section:
+                    fraction = section.split("/")
+                    note_duration = int(fraction[0]) / int(fraction[1])
+                else:
+                    note_duration = float(section)
+                i1 = i2
             
         elif note_regex.match(section):
             out += instruments[instrument].use(section, note_duration)
+            i1 = i2
         
-        elif "_" in section:
+        elif section == "_":
             out += Silence(note_duration)
+            i1 = i2
         
-        elif "[" in section:
-            instrument = instrument_regex.search(section).group(1)
+        elif instrument_regex.match():
+            instrument = section[1:-1]
+            i1 = i2
+        
+        else:
+            valid = False
+        
+        if do:
+            do = False
+            expanding = False
+            valid = False
+        elif expanding and not valid:
+            i2 -= 2
+            do = True
+            
+        i2 += 1
             
     return out

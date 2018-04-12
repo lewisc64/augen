@@ -1,4 +1,5 @@
 frequencies = {
+    "X":440.00, # percussion hit
     "C0":16.35,
     "C#0":17.32,
     "Db0":17.32,
@@ -153,6 +154,9 @@ frequencies = {
     "Bb8":7458.62,
     "B8":7902.13
 }
+
+def is_valid(note):
+    return note in frequencies
 
 def get_frequency(note):
     return frequencies[note]

@@ -14,4 +14,3 @@ def output(samples, path):
     for sample in samples:
         wav_file.writeframes(struct.pack("h", int(sample.value * sample.volume * BASE_AMPLITUDE / 2)))
     wav_file.close()
-
