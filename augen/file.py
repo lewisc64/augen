@@ -75,7 +75,7 @@ def interpret(content, note_duration=0.25, instrument="sine"):
             out += Silence(note_duration)
             i1 = i2
         
-        elif instrument_regex.match():
+        elif instrument_regex.match(section):
             instrument = section[1:-1]
             i1 = i2
         

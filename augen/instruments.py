@@ -38,5 +38,5 @@ class Ping(Instrument):
 
 class Piano(Instrument):
     def use(self, note, duration, volume=1):
-        out = Sine(get_frequency(note), volume, duration) * Sine(get_frequency(note) / 2, volume / 10, duration) * Sine(get_frequency(note) * 2, volume / 10, duration)
+        out = Sine(get_frequency(note), volume, duration) * Sine(get_frequency(note) / 2, volume / 2, duration) * Sine(get_frequency(note) * 2, volume / 2, duration)
         return out
