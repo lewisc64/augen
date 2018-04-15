@@ -1,6 +1,6 @@
 SAMPLE_RATE = 44100
-BASE_AMPLITUDE = 8000
+BASE_AMPLITUDE = 8000 // 2
 
 from .augen import *
 from .functions import *
-from .file import *
+from . import music

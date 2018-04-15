@@ -1,4 +1,4 @@
-frequencies = {
+notes = {
     "X":440.00, # percussion hit
     "C0":16.35,
     "C#0":17.32,
@@ -156,10 +156,13 @@ frequencies = {
 }
 
 def is_valid(note):
-    return note in frequencies
+    """ checks if a string is a valid musical note for the program. """
+    return note in notes
 
 def get_frequency(note):
-    return frequencies[note]
+    """ gets the frequency of a musical note. """
+    return notes[note]
 
 def get_frequencies(notes):
+    """ calls get_frequency on every member of a list. """
     return [get_frequency(note) for note in notes]

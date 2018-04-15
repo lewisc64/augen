@@ -2,12 +2,19 @@ import math
 import random
 import copy
 from . import SAMPLE_RATE
+from . import BASE_AMPLITUDE
 #from .audio import Sample
 
 class Sample:
     def __init__(self, value, volume):
         self.value = value
         self.volume = volume
+
+    def __str__(self):
+        return repr(self)
+
+    def __repr__(self):
+        return "Sample({}, {})".format(self.value, self.volume)
     
     def __add__(self, value):
         """ add two samples together. volume is baked and then reassigned to 1. """
@@ -101,7 +108,7 @@ class Sine(Segment):
         super().__init__(self.construct(duration))
         
     def function(self, n, amount):
-        return Sample(math.sin(n * 2 * math.pi * self.frequency / SAMPLE_RATE), self.volume)
+        return Sample(math.sin(n * 2 * math.pi * self.frequency / SAMPLE_RATE) * BASE_AMPLITUDE, self.volume)
 
 class Saw(Segment):
     def __init__(self, frequency, volume, duration, **kwargs):
@@ -110,7 +117,7 @@ class Saw(Segment):
         super().__init__(self.construct(duration))
     
     def function(self, n, amount):
-        return Sample((n % (SAMPLE_RATE / self.frequency)) * (self.frequency / SAMPLE_RATE) * 2 - 1, self.volume)
+        return Sample(((n % (SAMPLE_RATE / self.frequency)) * (self.frequency / SAMPLE_RATE) * 2 - 1) * BASE_AMPLITUDE, self.volume)
 
 class WhiteNoise(Segment):
     def __init__(self, volume, duration, **kwargs):
@@ -118,7 +125,7 @@ class WhiteNoise(Segment):
         super().__init__(self.construct(duration))
     
     def function(self, n, amount):
-        return Sample(random.random() * 2 - 1, self.volume)
+        return Sample((random.random() * 2 - 1) * BASE_AMPLITUDE, self.volume)
 
 class BrownianNoise(Segment):
     def __init__(self, volume, duration, **kwargs):
@@ -128,7 +135,7 @@ class BrownianNoise(Segment):
     
     def function(self, n, amount):
         self.frequency = max(min(self.frequency + (random.random() * 2 - 1) / 5, 1), -1)
-        return Sample(self.frequency, self.volume)
+        return Sample(self.frequency * BASE_AMPLITUDE, self.volume)
 
 class SlidingSine(Segment):
     def __init__(self, f_start, f_stop, volume, duration, **kwargs):
@@ -139,7 +146,7 @@ class SlidingSine(Segment):
         
     def function(self, n, amount):
         f = self.f_start + (self.f_stop - self.f_start) * (n / amount)
-        return Sample(math.sin(n * 2 * math.pi * f / SAMPLE_RATE), self.volume)
+        return Sample(math.sin(n * 2 * math.pi * f / SAMPLE_RATE) * BASE_AMPLITUDE, self.volume)
 
 class Silence(Segment):
     def __init__(self, duration, **kwargs):
