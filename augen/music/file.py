@@ -6,7 +6,7 @@ note_regex = re.compile("^(?:[A-G][b#]?[0-8]|X)$")
 time_regex = re.compile("^[0-9.]+\/?[0-9.]*$")
 instrument_regex = re.compile("^\[([a-z]+)\]$")
 
-instruments = {"sine":SineWave(), "saw":SawWave(), "snare":Snare(), "drum":Drum(), "ping":Ping(), "piano":Piano()}
+instruments = {"sine":SineWave(), "saw":SawWave(), "snare":Snare(), "drum":Drum(), "ping":Ping(), "organ":Organ()}
 
 def get_sections(data):
     bracket_level = 0
