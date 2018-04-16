@@ -1,4 +1,5 @@
 *.pyc
+*.wav
 
 # Windows image file caches
 Thumbs.db
