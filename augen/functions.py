@@ -98,7 +98,6 @@ class Segment:
     def fade_out(self):
         """ decreases the volume from the volume of the first sample. """
         max_vol = self.samples[0].volume
-        print(max_vol)
         for i, sample in enumerate(self.samples):
             sample.volume = max_vol * (1 - i / len(self.samples))
     
