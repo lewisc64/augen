@@ -24,9 +24,6 @@ def load(path):
     """ extracts all samples from a wav file and returns a segment. only supports mono. """
     
     file = wave.open(path, "r")
-    print("sample width: {}".format(file.getsampwidth()))
-    print("samplerate: {}".format(file.getframerate()))
-    print("channels: {}".format(file.getnchannels()))
     
     channels = file.getnchannels()
     bits_per_sample = file.getsampwidth()
@@ -34,13 +31,7 @@ def load(path):
     samples = []
     
     for i in range(file.getnframes()):
-        d = file.readframes(1)
-        #print(d)
-        #print("<{}{}".format(channels, formats[bits_per_sample]))
-        #print(d)
-        #print(d[::channels])
-        data = struct.unpack("<{}{}".format(channels, formats[bits_per_sample]), d)
-        #print(int(data[0]))
+        data = struct.unpack("<{}{}".format(channels, formats[bits_per_sample]), file.readframes(1))
         samples.append(Sample(int(data[0]), 1))
     
     return Segment(samples)
