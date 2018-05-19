@@ -16,6 +16,10 @@ class SawWave(Instrument):
     def use(self, note, duration, volume=1):
         return Saw(get_frequency(note), volume, duration)
 
+class SquareWave(Instrument):
+    def use(self, note, duration, volume=1):
+        return Square(get_frequency(note), volume, duration)
+
 class Snare(Instrument):
     def use(self, note, duration, volume=1):
         noise1, noise2 = WhiteNoise(volume, min(0.5, duration)).split(0.01)

@@ -1,7 +1,9 @@
 *.pyc
 *.wav
+*.mid
 *.bat
 build
+test.py
 
 # Windows image file caches
 Thumbs.db

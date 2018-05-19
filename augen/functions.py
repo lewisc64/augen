@@ -127,6 +127,15 @@ class Saw(Segment):
     def function(self, n, amount):
         return Sample(((n % (audio_info["SAMPLE_RATE"] / self.frequency)) * (self.frequency / audio_info["SAMPLE_RATE"]) * 2 - 1) * audio_info["BASE_AMPLITUDE"], self.volume)
 
+class Square(Segment):
+    def __init__(self, frequency, volume, duration, **kwargs):
+        self.frequency = frequency
+        self.volume = volume
+        super().__init__(self.construct(duration))
+    
+    def function(self, n, amount):
+        return Sample((1 if ((n % (audio_info["SAMPLE_RATE"] / self.frequency)) * (self.frequency / audio_info["SAMPLE_RATE"]) * 2 - 1) > 0 else -1) * audio_info["BASE_AMPLITUDE"], self.volume)
+
 class WhiteNoise(Segment):
     def __init__(self, volume, duration, **kwargs):
         self.volume = volume
