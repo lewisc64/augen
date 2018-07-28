@@ -1,7 +1,15 @@
 import math
 import wave
 import struct
-import pyaudio
+
+try:
+    import pyaudio
+    p = pyaudio.PyAudio()
+    chunk = 1024
+    device = p.get_default_output_device_info()["index"]
+    PYAUDIO_PRESENT = True
+except:
+    PYAUDIO_PRESENT = False
 
 from . import audio_info
 from .functions import Segment
@@ -9,12 +17,11 @@ from .functions import Sample
 
 formats = {1:"b", 2:"h", 4:"l"}
 
-p = pyaudio.PyAudio()
-chunk = 1024
-device = p.get_default_output_device_info()["index"]
-
 def play(segment, bits_per_sample=2, audio_device_index=None):
-    
+    if not PYAUDIO_PRESENT:
+        print("You do not have PyAudio. Install it to play sounds without dumping the data.")
+        return
+        
     if audio_device_index is None:
         audio_device_index = p.get_default_output_device_info()["index"]
         
