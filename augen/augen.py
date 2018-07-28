@@ -1,12 +1,38 @@
 import math
 import wave
 import struct
+import pyaudio
 
 from . import audio_info
 from .functions import Segment
 from .functions import Sample
 
 formats = {1:"b", 2:"h", 4:"l"}
+
+p = pyaudio.PyAudio()
+chunk = 1024
+device = p.get_default_output_device_info()["index"]
+
+def play(segment, bits_per_sample=2, audio_device_index=None):
+    
+    if audio_device_index is None:
+        audio_device_index = p.get_default_output_device_info()["index"]
+        
+    stream = p.open(format=p.get_format_from_width(bits_per_sample),
+                    channels=1,
+                    rate=audio_info["SAMPLE_RATE"],
+                    output_device_index=audio_device_index,
+                    output=True)
+    
+    samples = [int(x) for x in segment.samples]
+    
+    for i in range(0, len(samples), chunk):
+        sample_chunk = samples[i:i+chunk]
+        data = struct.pack("<{}{}".format(len(sample_chunk), formats[bits_per_sample]), *sample_chunk)
+        stream.write(data)
+    
+    stream.stop_stream()
+    stream.close()
 
 def save(samples, path, bits_per_sample=2):
     """ takes a segment and writes it to a wav file. mono only. """
@@ -16,7 +42,7 @@ def save(samples, path, bits_per_sample=2):
     
     for sample in samples:
 
-        file.writeframes(struct.pack(formats[bits_per_sample], int(sample.value * sample.volume)))
+        file.writeframes(struct.pack(formats[bits_per_sample], int(sample)))
     
     file.close()
 

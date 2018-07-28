@@ -13,6 +13,12 @@ class Sample:
 
     def __str__(self):
         return repr(self)
+    
+    def __int__(self):
+        return int(self.value * self.volume)
+        
+    def __float__(self):
+        return float(self.value * self.volume)
 
     def __repr__(self):
         return "Sample({}, {})".format(self.value, self.volume)
