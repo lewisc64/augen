@@ -10,7 +10,10 @@ class Sample:
 
     def copy(self):
         return copy.deepcopy(self)
-
+    
+    def get_value(self):
+        return self.value * self.volume
+    
     def __str__(self):
         return repr(self)
     
