@@ -4,6 +4,7 @@
 *.bat
 build
 test.py
+test2.py
 
 # Windows image file caches
 Thumbs.db

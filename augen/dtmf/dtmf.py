@@ -25,6 +25,6 @@ def generate(sequence, tone_duration=0.1, silence_duration=0.1):
         segment = Silence(tone_duration)
         if char in characters:
             for freq in characters[char]:
-                segment *= Square(freq, 1, tone_duration)
+                segment *= Sine(freq, 1, tone_duration)
             out += segment + Silence(silence_duration)
     return out

@@ -30,12 +30,9 @@ def get_sections(data):
 
 def interpret(content, note_duration=0.25, instrument="sine"):
     
-    print(content)
-    
     out = Segment()
     
     data = content.replace("\n", "").replace(" ", "")
-    print(data)
     
     cooldown = 0
     
@@ -48,7 +45,6 @@ def interpret(content, note_duration=0.25, instrument="sine"):
     
     while i2 <= len(data):
         section = data[i1:i2]
-        print(section)
         
         if section == "(":
             subsections, cooldown = get_sections(data[i1:])
