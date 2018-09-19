@@ -16,10 +16,23 @@ from .functions import Segment
 
 formats = {1:"b", 2:"h", 4:"l"}
 
+class PyAudioNotPresent(Exception):
+    def __init__(self):
+        super().__init__("You do not have PyAudio. Install it to stream sounds to audio devices.")
+
+class SamplerateMismatch(Exception):
+    def __init__(self, s):
+        super().__init__("""The sample rate of the file is set to {} Hz. augen is using {} Hz.
+Either change the file's sample rate to augen's, or set augen.audio_info[\"SAMPLE_RATE\"] to the file's.
+Note that if augen.audio_info[\"SAMPLE_RATE\"] is changed after sounds are generated, the sounds will be pitch shifted.""".format(s, audio_info["SAMPLE_RATE"]))
+
+class UnknownBitDepth(Exception):
+    def __init__(self, bit_depth):
+        super().__init__(str(bit_depth))
+
 def play(segment, bit_depth=2, audio_device_index=None):
     if not PYAUDIO_PRESENT:
-        print("You do not have PyAudio. Install it to play sounds without dumping the data.")
-        return
+        raise PyAudioNotPresent()
         
     if audio_device_index is None:
         audio_device_index = p.get_default_output_device_info()["index"]
@@ -42,7 +55,7 @@ def play(segment, bit_depth=2, audio_device_index=None):
 
 def play_async(segment, bit_depth=2, audio_device_index=None):
     """ calls the play function in a thread, then returns the thread """
-    thread = Thread(target = play, args = (segment, bit_depth, audio_device_index))
+    thread = Thread(target=play, args=(segment, bit_depth, audio_device_index))
     thread.start()
     return thread
 
@@ -65,11 +78,20 @@ def load(path):
     
     channels = file.getnchannels()
     bit_depth = file.getsampwidth()
+    sample_rate = file.getframerate()
+
+    if sample_rate != audio_info["SAMPLE_RATE"]:
+        raise SamplerateMismatch(sample_rate)
+
+    if bit_depth not in formats:
+        raise UnknownBitDepth(bit_depth)
     
     samples = []
     
     for i in range(file.getnframes()):
         data = struct.unpack("<{}{}".format(channels, formats[bit_depth]), file.readframes(1))
         samples.append(int(data[0]))
+
+    segment = Segment(samples)
     
     return Segment(samples)

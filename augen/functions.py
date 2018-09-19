@@ -24,6 +24,9 @@ class Segment:
             return Segment(self.samples[key.start:key.stop:key.step])
         else:
             return self.samples[key]
+
+    def __setitem__(self, i, v):
+        self.samples[i] = v
     
     def __add__(self, segment):
         """ appends two segment objects. """
@@ -90,7 +93,7 @@ class Segment:
         return [self.function(x, samples) for x in range(samples)]
         
 class Sine(Segment):
-    def __init__(self, frequency, volume, duration):
+    def __init__(self, frequency, volume, duration, **kwargs):
         self.frequency = frequency
         self.volume = volume
         super().__init__(self.construct(duration))
