@@ -64,7 +64,25 @@ class Segment:
         while self.duration() < duration:
             self.samples.append(self.samples[i - length].copy())
             i += 1 
-    
+
+    def change_speed(self, speed):
+        samples = []
+        expected_samples = len(self.samples) * (1 / speed)
+        for i, v in enumerate(self.samples):
+            while (i / len(self.samples)) * expected_samples > len(samples):
+                samples.append(v)
+        self.samples = samples
+
+    def echo(self, delay, decay, amount=1):
+        echoed = self.copy()
+        for x in range(amount):
+            echoed.samples = [x * decay for x in echoed.samples]
+            echoed = (Silence(delay) + echoed)[:len(self)]
+            self.merge(echoed)
+
+    def reverse(self):
+        self.samples = self.samples[::-1]
+
     def split(self, seconds):
         """ splits the segment into two, cut at seconds given. """
         sample = int(seconds * audio_info["SAMPLE_RATE"])
