@@ -23,7 +23,7 @@ class PyAudioNotPresent(Exception):
 class SamplerateMismatch(Exception):
     def __init__(self, s):
         super().__init__("""The sample rate of the file is set to {} Hz. augen is using {} Hz.
-Either change the file's sample rate to augen's, or set augen.audio_info[\"SAMPLE_RATE\"] to the file's.
+Ensure that augen.audio_info[\"SAMPLE_RATE\"] is equal to the file's.
 Note that if augen.audio_info[\"SAMPLE_RATE\"] is changed after sounds are generated, the sounds will be pitch shifted.""".format(s, audio_info["SAMPLE_RATE"]))
 
 class UnknownBitDepth(Exception):
