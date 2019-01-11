@@ -62,7 +62,7 @@ class Segment:
         length = len(self)
         i = length
         while self.duration() < duration:
-            self.samples.append(self.samples[i - length].copy())
+            self.samples.append(self.samples[i - length])
             i += 1 
 
     def change_speed(self, speed):
