@@ -67,7 +67,7 @@ def save(samples, path, bit_depth=2):
     
     for sample in samples:
 
-        file.writeframes(struct.pack(formats[bit_depth], sample))
+        file.writeframes(struct.pack(formats[bit_depth], int(sample)))
     
     file.close()
 
